@@ -1,39 +1,29 @@
 use std::{env, path::PathBuf, process};
 
-use stm32_bindings_gen::{Gen, Library, Options};
+use stm32_bindings_gen::{Gen, Options};
 
 fn main() {
     let out_dir = PathBuf::from("build/stm32-bindings");
-    let sources_dir = PathBuf::from("sources");
+    let sources_dir = resolve_sources_dir();
+    let target_triple = resolve_target_triple();
 
     let opts = Options {
         out_dir,
         sources_dir,
+        target_triple,
     };
 
-    let libs = Vec::from([
-        Library {
-            target_triple: String::from("thumbv8m.main-none-eabihf"),
-            sources_dir: "STM32CubeWBA".into(),
-            header: include_bytes!("../inc/wba_wpan_mac.h"),
-            module: "wba_wpan_mac",
-            includes: Vec::from(["Middlewares/ST/STM32_WPAN/mac_802_15_4/core/inc".into()]),
-            library: "Middlewares/ST/STM32_WPAN/mac_802_15_4/lib/wba_mac_lib.a".into(),
-        },
-        Library {
-            target_triple: String::from("thumbv8m.main-none-eabihf"),
-            sources_dir: "STM32CubeWBA".into(),
-            header: include_bytes!("../inc/wba_wpan_ble.h"),
-            module: "wba_wpan_ble",
-            includes: Vec::from([
-                "Middlewares/ST/STM32_WPAN/ble/stack/include".into(),
-                "Middlewares/ST/STM32_WPAN/ble/stack/include/auto".into(),
-            ]),
-            library: "Middlewares/ST/STM32_WPAN/ble/stack/lib/stm32wba_ble_stack_full.a".into(),
-        },
-    ]);
+    Gen::new(opts).run_gen();
+}
 
-    Gen::new(opts, libs).run_gen();
+fn resolve_sources_dir() -> PathBuf {
+    let nested = PathBuf::from("sources/STM32CubeWBA");
+
+    if nested.exists() {
+        nested
+    } else {
+        PathBuf::from("sources")
+    }
 }
 
 #[allow(dead_code)]
