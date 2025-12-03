@@ -34,4 +34,14 @@ jobs:
       - name: Run build
         run: cargo run --release --bin stm32-bindings-gen
       - name: Run package build
-        run: cd build/stm32-bindings && cargo build --target=thumbv8m.main-none-eabihf
+        run: |
+          cd build/stm32-bindings
+          cargo fix --lib -p stm32-bindings --target=thumbv8m.main-none-eabihf --allow-no-vcs
+          cargo build --target=thumbv8m.main-none-eabihf
+          cargo package --target=thumbv8m.main-none-eabihf
+          ls target/package
+      - name: Upload package build
+        uses: actions/upload-artifact@v4
+        with:
+          name: crate
+          path: build/stm32-bindings/target/package/*.crate
