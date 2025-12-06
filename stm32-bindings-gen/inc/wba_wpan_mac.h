@@ -14,10 +14,6 @@
 #include "stm_queue.h"
 #include "utilities_common.h"
 #include "linklayer_plat.h"
-#include "ll_sys_sequencer.h"
-#include "ll_sys_startup.h"
-#include "ll_sys.h"
-#include "ll_version.h"
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef APP_CONF_H
